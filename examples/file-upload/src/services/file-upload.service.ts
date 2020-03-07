@@ -9,10 +9,10 @@ import {
   config,
   ContextTags,
   Provider,
-} from '@loopback/core';
-import {RequestHandler} from 'express-serve-static-core';
+} from '@loopback/context';
 import multer from 'multer';
 import {FILE_UPLOAD_SERVICE} from '../keys';
+import {FileUploadHandler} from '../types';
 
 /**
  * A provider to return an `Express` request handler from `multer` middleware
@@ -21,7 +21,7 @@ import {FILE_UPLOAD_SERVICE} from '../keys';
   scope: BindingScope.TRANSIENT,
   tags: {[ContextTags.KEY]: FILE_UPLOAD_SERVICE},
 })
-export class FileUploadProvider implements Provider<RequestHandler> {
+export class FileUploadProvider implements Provider<FileUploadHandler> {
   constructor(@config() private options: multer.Options = {}) {
     if (!this.options.storage) {
       // Default to in-memory storage
@@ -29,7 +29,7 @@ export class FileUploadProvider implements Provider<RequestHandler> {
     }
   }
 
-  value(): RequestHandler {
+  value(): FileUploadHandler {
     return multer(this.options).any();
   }
 }

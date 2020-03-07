@@ -11,8 +11,8 @@ import {
   Response,
   RestBindings,
 } from '@loopback/rest';
-import {RequestHandler} from 'express-serve-static-core';
 import {FILE_UPLOAD_SERVICE} from '../keys';
+import {FileUploadHandler} from '../types';
 
 /**
  * A controller to handle file uploads using multipart/form-data media type
@@ -22,7 +22,9 @@ export class FileUploadController {
    * Constructor
    * @param handler - Inject an express request handler to deal with the request
    */
-  constructor(@inject(FILE_UPLOAD_SERVICE) private handler: RequestHandler) {}
+  constructor(
+    @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
+  ) {}
   @post('/file-upload', {
     responses: {
       200: {
@@ -33,7 +35,7 @@ export class FileUploadController {
             },
           },
         },
-        description: '',
+        description: 'Files and fields',
       },
     },
   })
@@ -78,6 +80,10 @@ export class FileUploadController {
     });
   }
 
+  /**
+   * Get files and fields for the request
+   * @param request - Http request
+   */
   private static getFilesAndFields(request: Request) {
     const uploadedFiles = request.files;
     const mapper = (f: globalThis.Express.Multer.File) => ({

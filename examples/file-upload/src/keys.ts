@@ -4,8 +4,11 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {BindingKey} from '@loopback/core';
-import {RequestHandler} from 'express-serve-static-core';
+import {FileUploadHandler} from './types';
 
-export const FILE_UPLOAD_SERVICE = BindingKey.create<RequestHandler>(
+/**
+ * Binding key for the file upload service
+ */
+export const FILE_UPLOAD_SERVICE = BindingKey.create<FileUploadHandler>(
   'services.FileUpload',
 );

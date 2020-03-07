@@ -5,7 +5,7 @@
 
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
-import {RestApplication, RestBindings} from '@loopback/rest';
+import {RestApplication} from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -32,23 +32,7 @@ export class FileUploadApplication extends BootMixin(RestApplication) {
     this.component(RestExplorerComponent);
 
     // Configure file upload with multer options
-    const multerOptions: multer.Options = {
-      storage: multer.diskStorage({
-        // Upload files to `.sandbox`
-        destination: path.join(__dirname, '../.sandbox'),
-        // Use the original file name as is
-        filename: (req, file, cb) => {
-          cb(null, file.originalname);
-        },
-      }),
-    };
-    this.configure(FILE_UPLOAD_SERVICE).to(multerOptions);
-
-    // Configure AJV to ignore `binary` format which is required for OpenAPI
-    // spec 3.0 for file uploads
-    this.bind(RestBindings.REQUEST_BODY_PARSER_OPTIONS).to({
-      validation: {unknownFormats: ['binary']},
-    });
+    this.configureFileUpload();
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -60,5 +44,23 @@ export class FileUploadApplication extends BootMixin(RestApplication) {
         nested: true,
       },
     };
+  }
+
+  /**
+   * Configure `multer` options for file upload
+   */
+  protected configureFileUpload() {
+    const multerOptions: multer.Options = {
+      storage: multer.diskStorage({
+        // Upload files to `.sandbox`
+        destination: path.join(__dirname, '../.sandbox'),
+        // Use the original file name as is
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
+    };
+    // Configure the file upload service with multer options
+    this.configure(FILE_UPLOAD_SERVICE).to(multerOptions);
   }
 }
